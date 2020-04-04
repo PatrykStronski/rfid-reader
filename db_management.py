@@ -3,7 +3,6 @@ import psycpog2 as pg
 dbname="rfid_logs"
 dbuser="azath"
 host="localhost"
-password="waran138"
 
 try:
     conn = pg.connect("dbname='"+dbname+"' user='"+dbuser+"' host='"+host+"' password='"+password+"'")
