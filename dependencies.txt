@@ -1,0 +1,5 @@
+flask
+MFRC522
+time
+psycopg2
+datetime
