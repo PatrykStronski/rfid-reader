@@ -4,7 +4,7 @@ from report_creator import create_report
 dbname="rfid_logs"
 dbuser="postgres"
 host="localhost"
-password=""
+password="postgres"
 
 try:
     conn = pg.connect("dbname='"+dbname+"' user='"+dbuser+"' host='"+host+"' password='"+password+"'")

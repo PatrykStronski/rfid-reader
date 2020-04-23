@@ -1,28 +1,31 @@
 import json
 from flask import Flask, request, jsonify
+import paho.mqtt.client as mqtt
 import db_management as dbm
 
-QUEUE_ADDRESS="mqtt://localhost"
+QUEUE_ADDRESS="localhost"
 QUEUE_TOPIC="logging"
 app = Flask(__name__)
 client = mqtt.Client()
+client.connect(QUEUE_ADDRESS)
+client.loop_start()
+client.subscribe(QUEUE_TOPIC, 2)
 
 def consume_message(client, user_data, msg):
-    message = json.loads(msg)
-    if (msg.status == "health"):
-        if (msg.on):
-            print("Instance "+msg.instance_id+" started")
+    print("Consuming message")
+    msg.payload = msg.payload.decode("utf-8")
+    message = json.loads(msg.payload)
+    print(message["status"])
+    if (message["status"] == "health"):
+        if (message["on"]):
+            print("Instance "+message["instance_id"]+" started")
         else:
-            print("Instance "+msg.instance_id+" down")
-    elif (msg.status == "log"):
-        print("Log from "+msg.instance_id+" received")
-        dbm.write_message(msg.uid, msg.time, msg.instance_id)
+            print("Instance "+message["instance_id"]+" down")
+    elif (message["status"] == "log"):
+        print("Log from "+message["instance_id"]+" received")
+        dbm.write_message(message["uid"], message["time"], message["instance_id"])
 
-def initialize_broker():
-    client.connect(QUEUE_ADDRESS)
-    client.on_message = consume_message
-    client.loop_start
-    client.subscribe(QUEUE_TOPIC)
+client.on_message = consume_message
 
 @app.route('/employee',methods=['PUT','GET','PATCH','DELETE'])
 def employee():
@@ -60,8 +63,6 @@ def get_log_times():
 def health_check():
     return "health ok", 200
 
-
 if __name__ == "__main__":
   app.run(debug=True)
-  initialize_broker()
 
