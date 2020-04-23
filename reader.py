@@ -1,14 +1,22 @@
 import time
+import uuid
 import RPi.GPIO as GPIO
 import MFRC522
-import db_management as dbm
+import paho.mqtt.client as mqtt
 
 buttonRed = 5
+QUEUE_ADDRESS="mqtt://localhost"
+QUEUE_TOPIC="logging"
+
+client = mqtt.Client()
+i_id = uuid.uuid4()
 
 def save_uid_log(uid,time_read):
+    client.connect(QUEUE_ADDRESS)
     s = "-"
     time_read=int(time_read)
-    dgm.save_message(s.join(uid),time_read)
+    msg = {time: time_read, uid: s.join(uid), instance_id: i_id}
+    client.publish(QUEUE_TOPIC, msg)
 
 def initialize_reader():
     MIFAREReader = MFRC522.MFRC522()
