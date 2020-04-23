@@ -1,14 +1,13 @@
+import time
 import json
 import paho.mqtt.client as mqtt
 import db_management as dbm
 
 QUEUE_ADDRESS="localhost"
 QUEUE_TOPIC="logging"
-app = Flask(__name__)
 client = mqtt.Client()
 client.connect(QUEUE_ADDRESS)
-client.loop_start()
-client.subscribe(QUEUE_TOPIC, 2)
+
 
 def consume_message(client, user_data, msg):
     print("Consuming message")
@@ -25,5 +24,8 @@ def consume_message(client, user_data, msg):
         dbm.write_message(message["uid"], message["time"], message["instance_id"])
 
 client.on_message = consume_message
-
-
+print("Started broker server")
+while 1:
+    client.loop_start()
+    client.subscribe(QUEUE_TOPIC, 2)
+    time.sleep(1)

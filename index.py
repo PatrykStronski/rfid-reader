@@ -1,32 +1,7 @@
-import json
 from flask import Flask, request, jsonify
-import paho.mqtt.client as mqtt
 import db_management as dbm
 
-QUEUE_ADDRESS="localhost"
-QUEUE_TOPIC="logging"
 app = Flask(__name__)
-client = mqtt.Client()
-client.connect(QUEUE_ADDRESS)
-client.loop_start()
-client.subscribe(QUEUE_TOPIC, 2)
-
-def consume_message(client, user_data, msg):
-    print("Consuming message")
-    msg.payload = msg.payload.decode("utf-8")
-    message = json.loads(msg.payload)
-    print(message["status"])
-    if (message["status"] == "health"):
-        if (message["on"]):
-            print("Instance "+message["instance_id"]+" started")
-        else:
-            print("Instance "+message["instance_id"]+" down")
-    elif (message["status"] == "log"):
-        print("Log from "+message["instance_id"]+" received")
-        dbm.write_message(message["uid"], message["time"], message["instance_id"])
-
-client.on_message = consume_message
-
 @app.route('/employee',methods=['PUT','GET','PATCH','DELETE'])
 def employee():
     if request.method == 'PUT':
