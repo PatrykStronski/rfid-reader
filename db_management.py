@@ -15,9 +15,9 @@ try:
 except:
     print("Error connecting to Database")
 
-def write_message(uid,log_time):
+def write_message(uid,log_time,reader):
     cur = conn.cursor()
-    cur.execute("INSERT INTO card_logs(uid,log_time) VALUES("+uid+","+log_time+");")
+    cur.execute("INSERT INTO card_logs(uid,log_time,reader_id) VALUES("+uid+","+log_time+","+reader+");")
     conn.commit()
 
 def fetch_log_times(uid):
@@ -51,7 +51,7 @@ def patch_user_card(id,uid):
 
 def fetch_working_times(employee_id):
     cur = conn.cursor()
-    cur.execute("SELECT card_logs.uid, card_logs.log_time from card_logs INNER JOIN users ON users.uid LIKE card_logs.uid WHERE users.id = "+employee_id+";")
+    cur.execute("SELECT card_logs.uid, card_logs.log_time, card_logs.reader_id from card_logs INNER JOIN users ON users.uid LIKE card_logs.uid WHERE users.id = "+employee_id+";")
     return create_report(cur.fetchall())
 
 def delete_user(e_id):

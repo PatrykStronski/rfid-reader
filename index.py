@@ -1,8 +1,28 @@
+import json
 from flask import Flask, request, jsonify
 import db_management as dbm
-from reader import initialize_reader
 
+QUEUE_ADDRESS="mqtt://localhost"
+QUEUE_TOPIC="logging"
 app = Flask(__name__)
+client = mqtt.Client()
+
+def consume_message(client, user_data, msg):
+    message = json.loads(msg)
+    if (msg.status == "health"):
+        if (msg.on):
+            print("Instance "+msg.instance_id+" started")
+        else:
+            print("Instance "+msg.instance_id+" down")
+    elif (msg.status == "log"):
+        print("Log from "+msg.instance_id+" received")
+        dbm.write_message(msg.uid, msg.time, msg.instance_id)
+
+def initialize_broker():
+    client.connect(QUEUE_ADDRESS)
+    client.on_message = consume_message
+    client.loop_start
+    client.subscribe(QUEUE_TOPIC)
 
 @app.route('/employee',methods=['PUT','GET','PATCH','DELETE'])
 def employee():
@@ -40,7 +60,8 @@ def get_log_times():
 def health_check():
     return "health ok", 200
 
+
 if __name__ == "__main__":
   app.run(debug=True)
+  initialize_broker()
 
-initialize_reader()

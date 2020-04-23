@@ -1,4 +1,5 @@
 import time
+import json
 import uuid
 import RPi.GPIO as GPIO
 import MFRC522
@@ -9,17 +10,19 @@ QUEUE_ADDRESS="mqtt://localhost"
 QUEUE_TOPIC="logging"
 
 client = mqtt.Client()
+client.connect(QUEUE_ADDRESS)
 i_id = uuid.uuid4()
 
 def save_uid_log(uid,time_read):
-    client.connect(QUEUE_ADDRESS)
     s = "-"
     time_read=int(time_read)
-    msg = {time: time_read, uid: s.join(uid), instance_id: i_id}
-    client.publish(QUEUE_TOPIC, msg)
+    msg = {status: "log", time: time_read, uid: s.join(uid), instance_id: i_id}
+    client.publish(QUEUE_TOPIC, json.dumps(msg))
 
 def initialize_reader():
     MIFAREReader = MFRC522.MFRC522()
+    msg = {status: "health", on: 1, instance_id: i_id}
+    client.publish(QUEUE_TOPIC, json.dumps(msg))
     print("Reader started")
     print("Press Ctrl-C or red button to stop.")
     try:
@@ -31,4 +34,6 @@ def initialize_reader():
           print("UID: "+str(uid[0])+","+str(uid[1])+","+str(uid[2])+","+str(uid[3]))
           time.sleep(5)
     except KeyboardInterrupt:
-      GPIO.cleanup()
+        msg = {status: "health", on: 0, instance_id: i_id}
+        client.publish(QUEUE_TOPIC, json.dumps(msg))
+        GPIO.cleanup()
