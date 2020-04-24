@@ -5,6 +5,7 @@ def create_report(dates):
     for ldate in dates:
         sdate = datetime.utcfromtimestamp(ldate[1]).strftime('%Y-%m-%d')
         if sdate in report.keys():
+            report[sdate]['logs'].append({'time': datetime.utcfromtimestamp(ldate[1]).strftime('%Y-%m-%dT%H:%M:%S'), 'unix': ldate[1]})            
             in_unix = report[sdate]['in']['unix']
             if in_unix > ldate[1]:
                 report[sdate]['out'] = report[sdate]['in']
@@ -19,5 +20,5 @@ def create_report(dates):
                     report[sdate]['out'] = {'time': datetime.utcfromtimestamp(ldate[1]).strftime('%Y-%m-%dT%H:%M:%S'), 'unix': ldate[1]}
                     report[sdate]['time_in_hours'] = (report[sdate]['out']['unix'] - report[sdate]['in']['unix']) / 3600.0
         else:
-            report[sdate] = {'in': {'time': datetime.utcfromtimestamp(ldate[1]).strftime('%Y-%m-%dT%H:%M:%S'), 'unix': ldate[1]}}
+            report[sdate] = {'in': {'time': datetime.utcfromtimestamp(ldate[1]).strftime('%Y-%m-%dT%H:%M:%S'), 'unix': ldate[1]},'out': {},'logs': []}
     return report
