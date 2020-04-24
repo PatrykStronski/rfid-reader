@@ -19,7 +19,7 @@ def save_uid_log(uid,time_read):
 
 def initialize_reader():
     msg = {"status": "health", "on": 1, "instance_id": i_id}
-    client.publish(QUEUE_TOPIC, json.dumps(msg), 2)
+    client.publish(QUEUE_TOPIC, json.dumps(msg))
     print("Reader started")
     print("Press Ctrl-C or red button to stop.")
     try:

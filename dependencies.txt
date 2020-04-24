@@ -3,3 +3,5 @@ MFRC522
 time
 psycopg2
 datetime
+paho-mqtt
+uuid

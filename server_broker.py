@@ -10,10 +10,8 @@ client.connect(QUEUE_ADDRESS)
 
 
 def consume_message(client, user_data, msg):
-    print("Consuming message")
     msg.payload = msg.payload.decode("utf-8")
     message = json.loads(msg.payload)
-    print(message["status"])
     if (message["status"] == "health"):
         if (message["on"]):
             print("Instance "+message["instance_id"]+" started")
