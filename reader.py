@@ -14,8 +14,13 @@ PORT = 8883
 
 client = mqtt.Client()
 client.tls_set("../config/ca.crt")
+client.username_pw_set(username='client', password='client')
 client.connect(BROKER, PORT)
 terminal_id = str(uuid.uuid4())
+
+def ​process_message​(​client​, ​userdata​, message):   
+  message_decoded = str​(message.payload.decode(​"utf-8"​))   
+  messagebox.showinfo(​"Message from the Server"​, message_decoded)
 
 def save_uid_log(uid,time_read):
     s = "-"

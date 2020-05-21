@@ -5,9 +5,13 @@ import db_management as dbm
 
 QUEUE_ADDRESS="localhost"
 QUEUE_TOPIC="logging"
-client = mqtt.Client()
-client.connect(QUEUE_ADDRESS)
+BROKER = "employee-verification" #using FQDN provided
+PORT = 8883
 
+client = mqtt.Client()
+client.tls_set("../config/ca.crt")
+client.username_pw_set(username='server', password='server')
+client.connect(BROKER, PORT)
 
 def consume_message(client, user_data, msg):
     msg.payload = msg.payload.decode("utf-8")
@@ -35,6 +39,7 @@ def ​create_main_window​():
     exit_button.pack(​side​=​"right"​)   
     print_log_button.pack(​side​=​"right"​)
 
+create_main_window()
 while 1:
     client.loop_start()
     client.subscribe(QUEUE_TOPIC, 2)
