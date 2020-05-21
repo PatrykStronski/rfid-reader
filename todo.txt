@@ -1,0 +1,6 @@
+1. Enabling authentication, turning off anonymous access to topics
+2. creating username w. password for client
+3. creating username w. password for server
+4. create ACL, restrict to LH only (in out case)
+5. TLS
+6. MQTT Control packets

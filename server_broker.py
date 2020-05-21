@@ -23,6 +23,18 @@ def consume_message(client, user_data, msg):
 
 client.on_message = consume_message
 print("Started broker server")
+
+def ​create_main_window​():   
+    window.geometry(​"250x100"​)   
+    window.title(​"RECEIVER"​)   
+    label = tkinter.Label(window, ​text​=​"Listening to the MQTT"​)   
+    exit_button = tkinter.Button(window, ​text​=​"Stop"​, ​command​=window.quit)​ 
+    hello_button = tkinter.Button(window, text=​"Server started"​, command=lambda:client.publish(​"server/name"​, ​"Hello from the server"​)) #add this line
+    print_log_button = tkinter.Button(window, ​text​=​"Print log"​, ​command​=print_log_to_window)   
+    label.pack()​hello_button.pack(side=​"right"​)   
+    exit_button.pack(​side​=​"right"​)   
+    print_log_button.pack(​side​=​"right"​)
+
 while 1:
     client.loop_start()
     client.subscribe(QUEUE_TOPIC, 2)
