@@ -10,6 +10,7 @@ PORT = 8883
 
 client = mqtt.Client()
 client.tls_set("../config/ca.crt")
+client.username_pw_set(username='client', password='client')
 client.connect(BROKER, PORT)
 terminal_id = str(uuid.uuid4())
 

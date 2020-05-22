@@ -22,7 +22,7 @@ def ​process_message​(​client​, ​userdata​, message):
   message_decoded = str​(message.payload.decode(​"utf-8"​))   
   messagebox.showinfo(​"Message from the Server"​, message_decoded)
 
-def save_uid_log(uid,time_read):
+def save_uid_log(uid, time_read):
     s = "-"
     time_read=int(time_read)
     msg = {"status": "log", "time": time_read, "uid": s.join(uid), "instance_id": terminal_id}

@@ -1,17 +1,18 @@
 import time
 import json
+import tkinter
 import paho.mqtt.client as mqtt
 import db_management as dbm
 
 QUEUE_ADDRESS="localhost"
 QUEUE_TOPIC="logging"
-BROKER = "employee-verification" #using FQDN provided
-PORT = 8883
+BROKER="employee-verification"
+PORT=8883
 
-client = mqtt.Client()
-client.tls_set("../config/ca.crt")
-client.username_pw_set(username='server', password='server')
-client.connect(BROKER, PORT)
+client=mqtt.Client()
+client.tls_set("./config/ca.crt")
+client.username_pw_set(username="server", password="server")
+client.connect(QUEUE_ADDRESS, PORT)
 
 def consume_message(client, user_data, msg):
     msg.payload = msg.payload.decode("utf-8")
@@ -28,18 +29,7 @@ def consume_message(client, user_data, msg):
 client.on_message = consume_message
 print("Started broker server")
 
-def ​create_main_window​():   
-    window.geometry(​"250x100"​)   
-    window.title(​"RECEIVER"​)   
-    label = tkinter.Label(window, ​text​=​"Listening to the MQTT"​)   
-    exit_button = tkinter.Button(window, ​text​=​"Stop"​, ​command​=window.quit)​ 
-    hello_button = tkinter.Button(window, text=​"Server started"​, command=lambda:client.publish(​"server/name"​, ​"Hello from the server"​)) #add this line
-    print_log_button = tkinter.Button(window, ​text​=​"Print log"​, ​command​=print_log_to_window)   
-    label.pack()​hello_button.pack(side=​"right"​)   
-    exit_button.pack(​side​=​"right"​)   
-    print_log_button.pack(​side​=​"right"​)
 
-create_main_window()
 while 1:
     client.loop_start()
     client.subscribe(QUEUE_TOPIC, 2)
