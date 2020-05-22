@@ -5,13 +5,12 @@ import paho.mqtt.client as mqtt
 
 QUEUE_ADDRESS="localhost"
 QUEUE_TOPIC="logging"
-BROKER = "employee-verification" #using FQDN provided
 PORT = 8883
 
 client = mqtt.Client()
-client.tls_set("../config/ca.crt")
+client.tls_set("./config/ca.crt")
 client.username_pw_set(username='client', password='client')
-client.connect(BROKER, PORT)
+client.connect(QUEUE_ADDRESS, PORT)
 terminal_id = str(uuid.uuid4())
 
 def save_uid_log(uid,time_read):

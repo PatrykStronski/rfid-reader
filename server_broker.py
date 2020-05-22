@@ -6,7 +6,6 @@ import db_management as dbm
 
 QUEUE_ADDRESS="localhost"
 QUEUE_TOPIC="logging"
-BROKER="employee-verification"
 PORT=8883
 
 client=mqtt.Client()
