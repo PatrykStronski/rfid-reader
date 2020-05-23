@@ -6,6 +6,7 @@ import db_management as dbm
 
 QUEUE_ADDRESS="localhost"
 QUEUE_TOPIC="logging"
+QUEUE_TOPIC_ACK="ack"
 PORT=8883
 
 client=mqtt.Client()
@@ -24,6 +25,9 @@ def consume_message(client, user_data, msg):
     elif (message["status"] == "log"):
         print("Log from "+message["instance_id"]+" received")
         dbm.write_message(message["uid"], message["time"], message["instance_id"])
+    ack_msg = {status: "info", received: message["status"]}
+    client.publish(QUEUE_TOPIC_ACK, json.dumps(ack_msg))
+
 
 client.on_message = consume_message
 print("Started broker server")

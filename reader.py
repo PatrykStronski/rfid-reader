@@ -9,6 +9,7 @@ import tkinter
 buttonRed = 5
 QUEUE_ADDRESS="localhost"
 QUEUE_TOPIC="logging"
+QUEUE_TOPIC_ACK="ack"
 PORT = 8883
 
 client = mqtt.Client()
@@ -18,8 +19,8 @@ client.connect(QUEUE_ADDRESS, PORT)
 terminal_id = str(uuid.uuid4())
 
 def ​process_message​(​client​, ​userdata​, message):   
-  message_decoded = str​(message.payload.decode(​"utf-8"​))   
-  messagebox.showinfo(​"Message from the Server"​, message_decoded)
+    message_decoded = json.loads​(message.payload.decode(​"utf-8"​))
+    messagebox.showinfo(​"Message from the Server"​, message_decoded["status"] + message_decoded["received"])
 
 def save_uid_log(uid, time_read):
     s = "-"
@@ -45,3 +46,6 @@ def initialize_reader():
         msg = {"status": "health", "on": 0, "instance_id": terminal_id}
         client.publish(QUEUE_TOPIC, json.dumps(msg))
         GPIO.cleanup()
+
+initialize_reader()
+client.on_message = ​process_ack_message​
