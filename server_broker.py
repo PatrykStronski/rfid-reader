@@ -25,7 +25,7 @@ def consume_message(client, user_data, msg):
     elif (message["status"] == "log"):
         print("Log from "+message["instance_id"]+" received")
         dbm.write_message(message["uid"], message["time"], message["instance_id"])
-    ack_msg = {status: "info", received: message["status"]}
+    ack_msg = {"status": "info", "received": message["status"]}
     client.publish(QUEUE_TOPIC_ACK, json.dumps(ack_msg))
 
 
