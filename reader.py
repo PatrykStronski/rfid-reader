@@ -1,50 +1,45 @@
 import time
 import json
 import uuid
-import RPi.GPIO as GPIO
-import MFRC522
 import paho.mqtt.client as mqtt
-import tkinter
+import MFRC522
 import constants as consts
-
-buttonRed = 5
 
 client = mqtt.Client()
 client.tls_set("./config/ca.crt")
 client.username_pw_set(username='client', password='client')
 client.connect(consts.QUEUE_ADDRESS, consts.PORT)
-terminal_id = str(uuid.uuid4())
+TERMINAL_ID = str(uuid.uuid4())
 
-def process_ack_message(client, userdata, message):
+def process_ack_message(cl, userdata, message):
     print(message.payload.decode("utf-8"))
 
-def save_uid_log(uid,time_read):
+def save_uid_log(uid, time_read):
     s = "-"
-    time_read=int(time_read)
-    msg = {"status": "log", "time": time_read, "uid": s.join(uid), "instance_id": terminal_id}
+    time_read = int(time_read)
+    msg = {"status": "log", "time": time_read, "uid": s.join(uid), "instance_id": TERMINAL_ID}
     print("Sending message to server")
     client.publish(consts.QUEUE_TOPIC, json.dumps(msg))
 
 def initialize_reader():
-    MIFAREReader = MFRC522.MFRC522()
-    msg = {"status": "health", "on": 1, "instance_id": terminal_id}
+    mifrc_reader = MFRC522.MFRC522()
+    msg = {"status": "health", "on": 1, "instance_id": TERMINAL_ID}
     client.publish(consts.QUEUE_TOPIC, json.dumps(msg))
     print("Reader started")
     print("Press Ctrl-C or red button to stop.")
     try:
-      while GPIO.input(buttonRed):
-        (status,TagType) = MIFAREReader.MFRC522_Request(MIFAREReader.PICC_REQIDL)
-        (status,uid) = MIFAREReader.MFRC522_Anticoll()
-        client.loop_start()
-        client.subscribe(consts.QUEUE_TOPIC_ACK + "/" + terminal_id, 2)
-        if status == MIFAREReader.MI_OK:
-          save_uid_time(uid,time.time())
-          print("UID: "+str(uid[0])+","+str(uid[1])+","+str(uid[2])+","+str(uid[3]))
-          time.sleep(1)   
+        while 1:
+            (status, tag_type) = mifrc_reader.MFRC522_Request(mifrc_reader.PICC_REQIDL)
+            (status, uid) = mifrc_reader.MFRC522_Anticoll()
+            client.loop_start()
+            client.subscribe(consts.QUEUE_TOPIC_ACK + "/" + TERMINAL_ID, 2)
+            if status == mifrc_reader.MI_OK:
+                save_uid_log(uid, time.time())
+                print("UID: "+str(uid[0])+","+str(uid[1])+","+str(uid[2])+","+str(uid[3]))
+                time.sleep(1)   
     except KeyboardInterrupt:
-        msg = {"status": "health", "on": 0, "instance_id": terminal_id}
+        msg = {"status": "health", "on": 0, "instance_id": TERMINAL_ID}
         client.publish(consts.QUEUE_TOPIC, json.dumps(msg))
-        GPIO.cleanup()
 
-client.on_message = ​process_ack_message​
+client.on_message = process_ack_message
 initialize_reader()

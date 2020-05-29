@@ -2,3 +2,4 @@ QUEUE_ADDRESS="localhost"
 QUEUE_TOPIC="logging"
 QUEUE_TOPIC_ACK="ack"
 PORT = 8883
+BUTTON_RED = 5
